@@ -156,6 +156,89 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-git-revert-issue" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/09/git-revert-issue/">git revert的陷阱</a>
+    </h1>
+  
+
+        
+        <a href="/2019/01/09/git-revert-issue/" class="archive-article-date">
+  	<time datetime="2019-01-09T08:13:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>假设一开始master分支上有两个commit</p>
+<p><img src="/images/git-revert-issue/commit1.png" alt=""></p>
+<p>这时候我们切换到一个新分支develop并做了一个新的commit<br>这时候仓库历史是这样的<br><img src="/images/git-revert-issue/commit2.png" alt=""></p>
+<p>此时再切换回master后,执行<code>git merge develop</code></p>
+<p><img src="/images/git-revert-issue/commit3.png" alt=""></p>
+<p>但此时如果发现develop还不应该merge到master,因此在master上对上一个commit执行了<strong>revert</strong>, <code>git revert 9e84a</code>,这时候的历史就变成了</p>
+<p><img src="/images/git-revert-issue/commit5.png" alt=""></p>
+<p>这时如果你想重新把develop merge到master, 回到master,执行<code>git merge develop</code></p>
+<p>会发现提示<code>Already up-to-date.</code> 这是为什么呢, 因为<strong>revert</strong>本身是重新做了一个commit把<strong>被revert</strong>的commit的内容改回去了,但实际<code>git log</code> 显示的被revert的commit还在历史中,比如这里<code>9e84a</code>,所以你重新把develop往master上merge的时候,git发现develop上的内容master上都有了.</p>
+<p>总结:不能把<strong>revert</strong> 理解为<code>git reset</code></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">git</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/01/09/git-revert-issue/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-reverse-proxy" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -543,6 +626,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">工具</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
