@@ -134,6 +134,97 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-login_linux" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/14/login_linux/">如何避免登录linux远程服务器每次都需要输passphrase</a>
+    </h1>
+  
+
+        
+        <a href="/2019/04/14/login_linux/" class="archive-article-date">
+  	<time datetime="2019-04-14T03:54:42.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>正常来说,如果linux登录设置了公钥私钥会很方便,无需输服务器密码直接可以登录,但是有时候由于安全考虑,给私钥设置了短语(passphrase), 那么每次登录时都需要输入此短语,这就变得每次通过密码登录一样繁琐,那么如果避免呢?</p>
+<h2 id="方法-可以通过ssh-agent-来记录已经添加过的私钥-那么之后的登录时的私钥就直接从ssh-agent来-类似做了一个缓存"><a href="#方法-可以通过ssh-agent-来记录已经添加过的私钥-那么之后的登录时的私钥就直接从ssh-agent来-类似做了一个缓存" class="headerlink" title="方法:可以通过ssh-agent 来记录已经添加过的私钥, 那么之后的登录时的私钥就直接从ssh-agent来,类似做了一个缓存"></a>方法:可以通过<strong>ssh-agent</strong> 来记录已经添加过的私钥, 那么之后的登录时的私钥就直接从ssh-agent来,类似做了一个缓存</h2><ol>
+<li>首先需要开启<strong>ssh-agent</strong>打开终端,输入<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-add</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>如果ssh-agent没有开启,则会报错<code>could not open a connection to your authentication agent</code>, 此时需先开启<code>ssh-agent</code>, 终端输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eval `ssh-agent`</span><br></pre></td></tr></table></figure></p>
+<p>如果终端显示<code>Agent pid 1211</code>则说明开启成功.</p>
+<ol>
+<li><p>在<strong>ssh-agent</strong>中添加私钥<br> 终端输入<code>ssh-add ~/.ssh/id_rsa</code>,如果该私钥没有添加短语的话,就直接添加成功了,否则终端会提示输入短语<br> <code>Enter passphrase for /Users/yejinbiao/.ssh/id_rsa:</code><br> 输入正确的短语,那么此私钥也就添加成功了</p>
+</li>
+<li><p>登录服务器(前提是公钥已经上传服务器,并且和你本地的私钥是一对的)<br> <code>ssh username@remotehost</code><br> 就能登录成功了, 这个时候私钥已经被ssh-agent缓存,电脑关机前都可以直接登录服务器</p>
+</li>
+<li><p>但还是有一点不方便, 那就是每次电脑重启后登录服务器之前(也就是步骤3),都得先添加私钥到<strong>ssh-agent</strong>(步骤2),我希望理想的情况是每次我只需要登录服务器,如果这是第一次登录,私钥还没被ssh-agent管理缓存的话,程序就直接帮我添加私钥(重点就是每次我只要输入一个命令,登录的命令),显然这时候只能写一个shell脚本来完成了<br>login_server.sh</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if !(ssh-add -l| grep &apos;id_rsa&apos;&amp;&gt; /dev/null); then</span><br><span class="line">        ssh-add ~/.ssh/id_rsa</span><br><span class="line">fi</span><br><span class="line">ssh username@remotehost</span><br></pre></td></tr></table></figure>
+<p>通过<code>ssh-add -l</code>可以查看当前所有被<strong>ssh-agent</strong>管理缓存的私钥,没找到指定私钥就添加,否则跳过添加私钥的步骤直接登录, 这样每次只要执行<code>sh login_server.sh</code>就能登录服务器了</p>
+<p>5 设置别名 <code>alias login=&#39;ssh login_server.sh&#39;</code>, 这样每次只要输入login就可以登录服务器了(第一次会要求输短语)</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">linux</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/04/14/login_linux/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-config-git-proxy" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -630,10 +721,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">install</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
@@ -642,11 +729,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">network</a>
+                <a href="javascript:void(0)" class="js-tag color3">install</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">network</a>
               </li>
             
             <div class="clearfix"></div>
